@@ -87,29 +87,41 @@ public class Menu implements CommandLineRunner {
                     if (clienteOpt.isPresent()) {
                         Cliente cliente = clienteOpt.get();
 
-                        System.out.print("Digite o nome do hotel: ");
-                        String nomeHotel = scanner.nextLine();
-                        Optional<Hotel> hotelOpt = hotelRepository.findByNome(nomeHotel);
-
-                        if (hotelOpt.isPresent()) {
-                            Hotel hotel = hotelOpt.get();
-
-                            System.out.print("Escolha o tipo de quarto (1 para Normal, 2 para Premium): ");
-                            int tipoQuartoEscolhido = scanner.nextInt();
-                            scanner.nextLine();
-                            TiposQuarto tipoQuarto = tipoQuartoEscolhido == 1 ? TiposQuarto.NORMAL : TiposQuarto.PREMIUM;
-
-                            System.out.print("Digite a data de início da reserva (yyyy-MM-dd): ");
-                            String dataInicio = scanner.nextLine();
-                            System.out.print("Digite a data de fim da reserva (yyyy-MM-dd): ");
-                            String dataFim = scanner.nextLine();
-
-                            String resultadoReserva = reservaService.fazerReserva(cliente.getId(), hotel.getId(), tipoQuarto, dataInicio, dataFim);
-                            System.out.println(resultadoReserva);
-
-                        } else {
-                            System.out.println("Hotel não encontrado. Verifique o nome e tente novamente.");
+                        List<Hotel> listaHoteis = hotelRepository.findAll();
+                        if (listaHoteis.isEmpty()) {
+                            System.out.println("Nenhum hotel disponível.");
+                            break;
                         }
+
+                        System.out.println("Selecione o hotel pelo número:");
+                        for (int i = 0; i < listaHoteis.size(); i++) {
+                            System.out.println((i + 1) + ". " + listaHoteis.get(i).getNome() +
+                                    " - Localização: " + listaHoteis.get(i).getLocalizacao());
+                        }
+
+                        System.out.print("Digite o número do hotel: ");
+                        int hotelNumero = scanner.nextInt();
+                        scanner.nextLine();
+
+                        if (hotelNumero < 1 || hotelNumero > listaHoteis.size()) {
+                            System.out.println("Opção inválida. Verifique o número e tente novamente.");
+                            break;
+                        }
+
+                        Hotel hotel = listaHoteis.get(hotelNumero - 1);
+
+                        System.out.print("Escolha o tipo de quarto (1 para Normal, 2 para Premium): ");
+                        int tipoQuartoEscolhido = scanner.nextInt();
+                        scanner.nextLine();
+                        TiposQuarto tipoQuarto = tipoQuartoEscolhido == 1 ? TiposQuarto.NORMAL : TiposQuarto.PREMIUM;
+
+                        System.out.print("Digite a data de início da reserva (yyyy-MM-dd): ");
+                        String dataInicio = scanner.nextLine();
+                        System.out.print("Digite a data de fim da reserva (yyyy-MM-dd): ");
+                        String dataFim = scanner.nextLine();
+
+                        String resultadoReserva = reservaService.fazerReserva(cliente.getId(), hotel.getId(), tipoQuarto, dataInicio, dataFim);
+                        System.out.println(resultadoReserva);
 
                     } else {
                         System.out.println("Cliente não encontrado. Por favor, cadastre o cliente primeiro.");
