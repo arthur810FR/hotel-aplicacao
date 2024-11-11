@@ -1,6 +1,7 @@
 package desafio.Inc.desafioHotel;
 
 import desafio.Inc.desafioHotel.enums.Disponibilidade;
+import desafio.Inc.desafioHotel.enums.TiposQuarto;
 import desafio.Inc.desafioHotel.model.Cliente;
 import desafio.Inc.desafioHotel.model.Hotel;
 import desafio.Inc.desafioHotel.model.Reserva;
@@ -93,12 +94,17 @@ public class Menu implements CommandLineRunner {
                         if (hotelOpt.isPresent()) {
                             Hotel hotel = hotelOpt.get();
 
+                            System.out.print("Escolha o tipo de quarto (1 para Normal, 2 para Premium): ");
+                            int tipoQuartoEscolhido = scanner.nextInt();
+                            scanner.nextLine();
+                            TiposQuarto tipoQuarto = tipoQuartoEscolhido == 1 ? TiposQuarto.NORMAL : TiposQuarto.PREMIUM;
+
                             System.out.print("Digite a data de início da reserva (yyyy-MM-dd): ");
                             String dataInicio = scanner.nextLine();
                             System.out.print("Digite a data de fim da reserva (yyyy-MM-dd): ");
                             String dataFim = scanner.nextLine();
 
-                            String resultadoReserva = reservaService.fazerReserva(cliente.getId(), hotel.getId(), dataInicio, dataFim);
+                            String resultadoReserva = reservaService.fazerReserva(cliente.getId(), hotel.getId(), tipoQuarto, dataInicio, dataFim);
                             System.out.println(resultadoReserva);
 
                         } else {

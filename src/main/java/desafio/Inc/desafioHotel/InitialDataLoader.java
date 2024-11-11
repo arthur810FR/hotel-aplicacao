@@ -1,6 +1,7 @@
 package desafio.Inc.desafioHotel;
 
 import desafio.Inc.desafioHotel.enums.Disponibilidade;
+import desafio.Inc.desafioHotel.enums.TiposQuarto;
 import desafio.Inc.desafioHotel.model.Hotel;
 import desafio.Inc.desafioHotel.model.Quarto;
 import desafio.Inc.desafioHotel.repository.HotelRepository;
@@ -32,9 +33,11 @@ public class InitialDataLoader {
                 hotelRepository.saveAll(hoteis);
 
                 for (Hotel hotel : hoteis) {
-                    for (int i = 0; i < 10; i++) {
-                        Quarto quarto = new Quarto("Quarto Normal", Disponibilidade.DISPONIVEL, hotel);
-                        quartoRepository.save(quarto);
+                    for (int i = 0; i < 5; i++) {
+                        Quarto quartoNormal = new Quarto(TiposQuarto.NORMAL, Disponibilidade.DISPONIVEL, hotel);
+                        Quarto quartoPremium = new Quarto(TiposQuarto.PREMIUM, Disponibilidade.DISPONIVEL, hotel);
+                        quartoRepository.save(quartoNormal);
+                        quartoRepository.save(quartoPremium);
                     }
                 }
 

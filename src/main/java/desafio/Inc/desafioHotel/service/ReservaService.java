@@ -1,6 +1,7 @@
 package desafio.Inc.desafioHotel.service;
 
 import desafio.Inc.desafioHotel.enums.Disponibilidade;
+import desafio.Inc.desafioHotel.enums.TiposQuarto;
 import desafio.Inc.desafioHotel.model.Cliente;
 import desafio.Inc.desafioHotel.model.Hotel;
 import desafio.Inc.desafioHotel.model.Quarto;
@@ -30,13 +31,13 @@ public class ReservaService {
     @Autowired
     private QuartoRepository quartoRepository;
 
-    public String fazerReserva(Long clienteId, Long hotelId, String dataInicio, String dataFim) {
+    public String fazerReserva(Long clienteId, Long hotelId, TiposQuarto tipoQuarto, String dataInicio, String dataFim) {
         Optional<Cliente> clienteOpt = clienteRepository.findById(clienteId);
         Optional<Hotel> hotelOpt = hotelRepository.findById(hotelId);
 
         if (clienteOpt.isPresent() && hotelOpt.isPresent()) {
-            Optional<Quarto> quartoOpt = quartoRepository.findFirstByHotelAndDisponibilidade(
-                    hotelOpt.get(), Disponibilidade.DISPONIVEL);
+            Optional<Quarto> quartoOpt = quartoRepository.findFirstByHotelAndDisponibilidadeAndTipo(
+                    hotelOpt.get(), Disponibilidade.DISPONIVEL, tipoQuarto);
 
             if (quartoOpt.isPresent()) {
                 Quarto quarto = quartoOpt.get();
@@ -46,7 +47,7 @@ public class ReservaService {
                 quartoRepository.save(quarto);
                 return "Reserva realizada com sucesso no " + hotelOpt.get().getNome();
             } else {
-                return "Nenhum quarto disponível no hotel " + hotelOpt.get().getNome();
+                return "Nenhum quarto " + tipoQuarto + " disponível no hotel " + hotelOpt.get().getNome();
             }
         }
         return "Cliente ou hotel não encontrado.";

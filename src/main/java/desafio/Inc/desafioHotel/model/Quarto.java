@@ -1,6 +1,7 @@
 package desafio.Inc.desafioHotel.model;
 
 import desafio.Inc.desafioHotel.enums.Disponibilidade;
+import desafio.Inc.desafioHotel.enums.TiposQuarto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,8 +16,9 @@ public class Quarto {
     private Long id;
 
     @NonNull
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String tipo;
+    private TiposQuarto tipo;
 
     @NonNull
     @Enumerated(EnumType.STRING)
@@ -27,7 +29,7 @@ public class Quarto {
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
 
-    public Quarto(String tipo, Disponibilidade disponibilidade, Hotel hotel) {
+    public Quarto(TiposQuarto tipo, Disponibilidade disponibilidade, Hotel hotel) {
         this.tipo = tipo;
         this.disponibilidade = disponibilidade;
         this.hotel = hotel;
