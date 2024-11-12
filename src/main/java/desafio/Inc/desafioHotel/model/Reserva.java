@@ -40,10 +40,10 @@ public class Reserva {
 
     @Override
     public String toString() {
-        return "Reserva:\n" +
+        return "\nReserva:\n" +
                 "Número do Quarto: " + quarto.getId() + "\n" +
                 "Tipo de Quarto: " + quarto.getTipo() + "\n" +
-                "Cliente:\n" + cliente.toString() + "\n" +
+                cliente.toString() + "\n" +
                 "Data de Início: " + dataInicio + "\n" +
                 "Data de Fim: " + dataFim;
     }

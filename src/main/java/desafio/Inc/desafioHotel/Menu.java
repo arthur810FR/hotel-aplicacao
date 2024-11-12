@@ -110,26 +110,29 @@ public class Menu implements CommandLineRunner {
     private void cadastrarCliente(Scanner scanner) {
         String nome;
         while (true) {
-            System.out.print("Digite o nome do cliente: ");
+            System.out.print("Digite o nome do cliente(Completo): ");
             nome = scanner.nextLine().trim();
-            if (nome.matches("^[a-zA-Z\\s]+$") && !nome.isEmpty()) {
+
+            if (nome.matches("^[a-zA-Z\\s]+$") && nome.length() >= 3) {
                 break;
+            } else if (nome.length() < 3) {
+                System.out.println("Erro: O nome deve ter pelo menos 3 caracteres.");
             } else {
-                System.out.println("Nome inválido! Digite o nome apenas com letras!");
+                System.out.println("Nome inválido! Digite o nome apenas com letras e espaços.");
             }
         }
 
         String cpf;
         while (true) {
-            System.out.print("Digite o CPF do cliente (somente números): ");
+            System.out.print("Digite o CPF do cliente: ");
             cpf = scanner.nextLine().trim();
 
-            if (!cpf.isEmpty() && cpf.matches("\\d{11}")) {
+            if (cpf.isEmpty()) {
+                System.out.println("Erro: O CPF não pode estar vazio.");
+            } else if (cpf.matches("\\d{11}")) {
                 break;
-            } else if (cpf.isEmpty()) {
-                System.out.println("Erro: CPF não pode estar vazio.");
             } else {
-                System.out.println("CPF inválido! O CPF deve conter exatamente 11 dígitos numéricos.");
+                System.out.println("Erro: CPF inválido! Certifique-se de que contém exatamente 11 dígitos numéricos.");
             }
         }
 
@@ -137,6 +140,7 @@ public class Menu implements CommandLineRunner {
         clienteRepository.save(novoCliente);
         System.out.printf("Cliente '%s' cadastrado com sucesso!\n", nome);
     }
+
 
 
     private void fazerReserva(Scanner scanner) {
@@ -232,7 +236,6 @@ public class Menu implements CommandLineRunner {
             if (reservas.isEmpty()) {
                 System.out.println("Nenhuma reserva encontrada para este cliente.");
             } else {
-                System.out.println("Suas reservas:");
                 reservas.forEach(System.out::println);
             }
         } catch (RuntimeException e) {
