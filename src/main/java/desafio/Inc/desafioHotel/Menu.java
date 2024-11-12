@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Optional;
@@ -110,26 +112,32 @@ public class Menu implements CommandLineRunner {
         while (true) {
             System.out.print("Digite o nome do cliente: ");
             nome = scanner.nextLine().trim();
-
-            if (nome.matches("^[a-zA-Z\\s]+$")) {
+            if (nome.matches("^[a-zA-Z\\s]+$") && !nome.isEmpty()) {
                 break;
             } else {
                 System.out.println("Nome inválido! Digite o nome apenas com letras!");
             }
         }
 
-        System.out.print("Digite o CPF do cliente: ");
-        String cpf = scanner.nextLine().trim();
+        String cpf;
+        while (true) {
+            System.out.print("Digite o CPF do cliente (somente números): ");
+            cpf = scanner.nextLine().trim();
 
-        if (cpf.isEmpty() || nome.isEmpty()) {
-            System.out.println("Erro: Nome e CPF não podem estar vazios.");
-            return;
+            if (!cpf.isEmpty() && cpf.matches("\\d{11}")) {
+                break;
+            } else if (cpf.isEmpty()) {
+                System.out.println("Erro: CPF não pode estar vazio.");
+            } else {
+                System.out.println("CPF inválido! O CPF deve conter exatamente 11 dígitos numéricos.");
+            }
         }
 
         Cliente novoCliente = new Cliente(nome, cpf);
         clienteRepository.save(novoCliente);
         System.out.printf("Cliente '%s' cadastrado com sucesso!\n", nome);
     }
+
 
     private void fazerReserva(Scanner scanner) {
         System.out.print("Digite o CPF do cliente: ");
@@ -179,10 +187,27 @@ public class Menu implements CommandLineRunner {
                     return;
                 }
 
-                System.out.print("Digite a data de início da reserva (yyyy-MM-dd): ");
-                String dataInicio = scanner.nextLine().trim();
-                System.out.print("Digite a data de fim da reserva (yyyy-MM-dd): ");
-                String dataFim = scanner.nextLine().trim();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                dateFormat.setLenient(false);
+
+                String dataInicio;
+                String dataFim;
+
+                while (true) {
+                    try {
+                        System.out.print("Digite a data de início da reserva (dd/MM/yyyy): ");
+                        dataInicio = scanner.nextLine().trim();
+                        dateFormat.parse(dataInicio);
+
+                        System.out.print("Digite a data de fim da reserva (dd/MM/yyyy): ");
+                        dataFim = scanner.nextLine().trim();
+                        dateFormat.parse(dataFim);
+
+                        break;
+                    } catch (ParseException e) {
+                        System.out.println("Formato de data inválido! Por favor, insira a data no formato dd/MM/yyyy.");
+                    }
+                }
 
                 String resultadoReserva = reservaService.fazerReserva(cliente.getId(), hotel.getId(), tipoQuarto, dataInicio, dataFim);
                 System.out.println(resultadoReserva);
