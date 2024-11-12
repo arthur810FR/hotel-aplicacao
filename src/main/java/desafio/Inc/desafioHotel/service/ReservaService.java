@@ -2,6 +2,9 @@ package desafio.Inc.desafioHotel.service;
 
 import desafio.Inc.desafioHotel.enums.Disponibilidade;
 import desafio.Inc.desafioHotel.enums.TiposQuarto;
+import desafio.Inc.desafioHotel.exceptions.ClienteNaoEncontrado;
+import desafio.Inc.desafioHotel.exceptions.HotelNaoEncontrado;
+import desafio.Inc.desafioHotel.exceptions.QuartoIndisponivel;
 import desafio.Inc.desafioHotel.model.Cliente;
 import desafio.Inc.desafioHotel.model.Hotel;
 import desafio.Inc.desafioHotel.model.Quarto;
@@ -32,33 +35,28 @@ public class ReservaService {
     private QuartoRepository quartoRepository;
 
     public String fazerReserva(Long clienteId, Long hotelId, TiposQuarto tipoQuarto, String dataInicio, String dataFim) {
-        Optional<Cliente> clienteOpt = clienteRepository.findById(clienteId);
-        Optional<Hotel> hotelOpt = hotelRepository.findById(hotelId);
+        Cliente cliente = clienteRepository.findById(clienteId)
+                .orElseThrow(() -> new ClienteNaoEncontrado("Cliente com ID " + clienteId + " não encontrado."));
 
-        if (clienteOpt.isPresent() && hotelOpt.isPresent()) {
-            Optional<Quarto> quartoOpt = quartoRepository.findFirstByHotelAndDisponibilidadeAndTipo(
-                    hotelOpt.get(), Disponibilidade.DISPONIVEL, tipoQuarto);
+        Hotel hotel = hotelRepository.findById(hotelId)
+                .orElseThrow(() -> new HotelNaoEncontrado("Hotel com ID " + hotelId + " não encontrado."));
 
-            if (quartoOpt.isPresent()) {
-                Quarto quarto = quartoOpt.get();
-                Reserva reserva = new Reserva(quarto, clienteOpt.get(), dataInicio, dataFim);
-                reservaRepository.save(reserva);
-                quarto.setDisponivel(false);
-                quartoRepository.save(quarto);
-                return "Reserva realizada com sucesso no " + hotelOpt.get().getNome();
-            } else {
-                return "Nenhum quarto " + tipoQuarto + " disponível no hotel " + hotelOpt.get().getNome();
-            }
-        }
-        return "Cliente ou hotel não encontrado.";
+        Quarto quarto = quartoRepository.findFirstByHotelAndDisponibilidadeAndTipo(hotel, Disponibilidade.DISPONIVEL, tipoQuarto)
+                .orElseThrow(() -> new QuartoIndisponivel("Nenhum quarto do tipo " + tipoQuarto + " disponível no hotel " + hotel.getNome() + "."));
+
+        Reserva reserva = new Reserva(quarto, cliente, dataInicio, dataFim);
+        reservaRepository.save(reserva);
+
+        quarto.setDisponivel(false);
+        quartoRepository.save(quarto);
+
+        return "Reserva realizada com sucesso no " + hotel.getNome();
     }
 
     public List<Reserva> verReservasDoCliente(String cpf) {
-        Optional<Cliente> clienteOpt = clienteRepository.findByCpf(cpf);
-        if (clienteOpt.isPresent()) {
-            return reservaRepository.findByClienteId(clienteOpt.get().getId());
-        } else {
-            throw new RuntimeException("Cliente não encontrado com o CPF fornecido.");
-        }
+        Cliente cliente = clienteRepository.findByCpf(cpf)
+                .orElseThrow(() -> new ClienteNaoEncontrado("Cliente com CPF " + cpf + " não encontrado."));
+
+        return reservaRepository.findByClienteId(cliente.getId());
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -38,125 +39,179 @@ public class Menu implements CommandLineRunner {
         boolean running = true;
 
         while (running) {
-            System.out.println("\n===========================================");
-            System.out.println("========MENU DE GESTÃO DE HOTEIS===========");
-            System.out.println("===========================================");
-            System.out.println("---------------------------");
-            System.out.println("|1. Ver Hotéis Disponíveis|");
-            System.out.println("|2. Cadastrar Cliente     |");
-            System.out.println("|3. Fazer Reserva         |");
-            System.out.println("|4. Ver Minhas Reservas   |");
-            System.out.println("|5. Sair                  |");
-            System.out.println("---------------------------");
-            System.out.print("Escolha uma opção: ");
+            try {
+                System.out.println("\n===========================================");
+                System.out.println("======== MENU DE GESTÃO DE HOTEIS =========");
+                System.out.println("===========================================");
+                System.out.println("| 1. Ver Hotéis Disponíveis               |");
+                System.out.println("| 2. Cadastrar Cliente                    |");
+                System.out.println("| 3. Fazer Reserva                        |");
+                System.out.println("| 4. Ver Minhas Reservas                  |");
+                System.out.println("| 5. Sair                                 |");
+                System.out.println("===========================================");
+                System.out.print("Escolha uma opção: ");
 
-            int opcao = scanner.nextInt();
-            scanner.nextLine();
+                int opcao = scanner.nextInt();
+                scanner.nextLine();
 
-            switch (opcao) {
-                case 1:
-                    List<Hotel> hoteisDisponiveis = hotelRepository.findAll();
-                    if (hoteisDisponiveis.isEmpty()) {
-                        System.out.println("Nenhum hotel disponível no momento.");
-                    } else {
-                        System.out.println("Hotéis disponíveis e quartos disponíveis para reserva:");
-                        hoteisDisponiveis.forEach(hotel -> {
-                            long quartosDisponiveis = quartoRepository.countByHotelAndDisponibilidade(hotel, Disponibilidade.DISPONIVEL);
-                            System.out.println("Hotel: " + hotel.getNome() + ", Localização: " + hotel.getLocalizacao() +
-                                    " - Quartos disponíveis: " + quartosDisponiveis);
-                        });
-                    }
-                    break;
+                switch (opcao) {
+                    case 1:
+                        mostrarHoteisDisponiveis();
+                        break;
 
-                case 2:
-                    System.out.print("Digite o nome do cliente: ");
-                    String nome = scanner.nextLine();
-                    System.out.print("Digite o CPF do cliente: ");
-                    String cpf = scanner.nextLine();
+                    case 2:
+                        cadastrarCliente(scanner);
+                        break;
 
-                    Cliente novoCliente = new Cliente(nome, cpf);
-                    clienteRepository.save(novoCliente);
-                    System.out.println("Cliente cadastrado com sucesso!");
-                    break;
+                    case 3:
+                        fazerReserva(scanner);
+                        break;
 
-                case 3:
-                    System.out.print("Digite o CPF do cliente: ");
-                    String cpfCliente = scanner.nextLine();
-                    Optional<Cliente> clienteOpt = clienteRepository.findByCpf(cpfCliente);
+                    case 4:
+                        verReservasDoCliente(scanner);
+                        break;
 
-                    if (clienteOpt.isPresent()) {
-                        Cliente cliente = clienteOpt.get();
+                    case 5:
+                        running = false;
+                        System.out.println("Obrigado por usar o sistema! Saindo...");
+                        break;
 
-                        List<Hotel> listaHoteis = hotelRepository.findAll();
-                        if (listaHoteis.isEmpty()) {
-                            System.out.println("Nenhum hotel disponível.");
-                            break;
-                        }
-
-                        System.out.println("Selecione o hotel pelo número:");
-                        for (int i = 0; i < listaHoteis.size(); i++) {
-                            System.out.println((i + 1) + ". " + listaHoteis.get(i).getNome() +
-                                    " - Localização: " + listaHoteis.get(i).getLocalizacao());
-                        }
-
-                        System.out.print("Digite o número do hotel: ");
-                        int hotelNumero = scanner.nextInt();
-                        scanner.nextLine();
-
-                        if (hotelNumero < 1 || hotelNumero > listaHoteis.size()) {
-                            System.out.println("Opção inválida. Verifique o número e tente novamente.");
-                            break;
-                        }
-
-                        Hotel hotel = listaHoteis.get(hotelNumero - 1);
-
-                        System.out.print("Escolha o tipo de quarto (1 para Normal, 2 para Premium): ");
-                        int tipoQuartoEscolhido = scanner.nextInt();
-                        scanner.nextLine();
-                        TiposQuarto tipoQuarto = tipoQuartoEscolhido == 1 ? TiposQuarto.NORMAL : TiposQuarto.PREMIUM;
-
-                        System.out.print("Digite a data de início da reserva (yyyy-MM-dd): ");
-                        String dataInicio = scanner.nextLine();
-                        System.out.print("Digite a data de fim da reserva (yyyy-MM-dd): ");
-                        String dataFim = scanner.nextLine();
-
-                        String resultadoReserva = reservaService.fazerReserva(cliente.getId(), hotel.getId(), tipoQuarto, dataInicio, dataFim);
-                        System.out.println(resultadoReserva);
-
-                    } else {
-                        System.out.println("Cliente não encontrado. Por favor, cadastre o cliente primeiro.");
-                    }
-                    break;
-
-                case 4:
-                    System.out.print("Digite o CPF do cliente para ver suas reservas: ");
-                    String cpfConsulta = scanner.nextLine();
-
-                    try {
-                        List<Reserva> reservas = reservaService.verReservasDoCliente(cpfConsulta);
-
-                        if (reservas.isEmpty()) {
-                            System.out.println("Você não possui reservas.");
-                        } else {
-                            System.out.println("Suas reservas:");
-                            reservas.forEach(System.out::println);
-                        }
-                    } catch (RuntimeException e) {
-                        System.out.println(e.getMessage());
-                    }
-                    break;
-
-
-                case 5:
-                    running = false;
-                    System.out.println("Saindo do sistema...");
-                    break;
-
-                default:
-                    System.out.println("Opção inválida. Tente novamente.");
+                    default:
+                        System.out.println("Opção inválida. Escolha um número entre 1 e 5.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Erro: Entrada inválida. Por favor, digite um número válido.");
+                scanner.nextLine();
+            } catch (Exception e) {
+                System.out.println("Ocorreu um erro inesperado: " + e.getMessage());
             }
         }
 
         scanner.close();
+    }
+
+    private void mostrarHoteisDisponiveis() {
+        List<Hotel> hoteisDisponiveis = hotelRepository.findAll();
+        if (hoteisDisponiveis.isEmpty()) {
+            System.out.println("Nenhum hotel disponível no momento.");
+        } else {
+            System.out.println("Hotéis disponíveis com quartos para reserva:");
+            hoteisDisponiveis.forEach(hotel -> {
+                long quartosDisponiveis = quartoRepository.countByHotelAndDisponibilidade(hotel, Disponibilidade.DISPONIVEL);
+                System.out.printf("Hotel: %s\nLocalização: %s\nQuartos disponíveis: %d\n",
+                        hotel.getNome(), hotel.getLocalizacao(), quartosDisponiveis);
+                System.out.println("------------------------------------------");
+            });
+        }
+    }
+
+    private void cadastrarCliente(Scanner scanner) {
+        String nome;
+        while (true) {
+            System.out.print("Digite o nome do cliente: ");
+            nome = scanner.nextLine().trim();
+
+            if (nome.matches("^[a-zA-Z\\s]+$")) {
+                break;
+            } else {
+                System.out.println("Nome inválido! Digite o nome apenas com letras!");
+            }
+        }
+
+        System.out.print("Digite o CPF do cliente: ");
+        String cpf = scanner.nextLine().trim();
+
+        if (cpf.isEmpty() || nome.isEmpty()) {
+            System.out.println("Erro: Nome e CPF não podem estar vazios.");
+            return;
+        }
+
+        Cliente novoCliente = new Cliente(nome, cpf);
+        clienteRepository.save(novoCliente);
+        System.out.printf("Cliente '%s' cadastrado com sucesso!\n", nome);
+    }
+
+    private void fazerReserva(Scanner scanner) {
+        System.out.print("Digite o CPF do cliente: ");
+        String cpfCliente = scanner.nextLine().trim();
+        Optional<Cliente> clienteOpt = clienteRepository.findByCpf(cpfCliente);
+
+        if (clienteOpt.isPresent()) {
+            Cliente cliente = clienteOpt.get();
+
+            List<Hotel> listaHoteis = hotelRepository.findAll();
+            if (listaHoteis.isEmpty()) {
+                System.out.println("Nenhum hotel disponível para reserva no momento.");
+                return;
+            }
+
+            System.out.println("Selecione o hotel pelo número:");
+            for (int i = 0; i < listaHoteis.size(); i++) {
+                System.out.printf("%d. %s - Localização: %s\n", i + 1, listaHoteis.get(i).getNome(), listaHoteis.get(i).getLocalizacao());
+            }
+
+            try {
+                System.out.print("Digite o número do hotel desejado: ");
+                int hotelNumero = scanner.nextInt();
+                scanner.nextLine();
+
+                if (hotelNumero < 1 || hotelNumero > listaHoteis.size()) {
+                    System.out.println("Opção inválida. Por favor, insira um número válido da lista.");
+                    return;
+                }
+
+                Hotel hotel = listaHoteis.get(hotelNumero - 1);
+
+                System.out.println("Escolha o tipo de quarto:");
+                System.out.println("1 - Quarto Normal");
+                System.out.println("2 - Quarto Premium");
+                System.out.print("Digite o número correspondente ao tipo de quarto: ");
+                int tipoQuartoEscolhido = scanner.nextInt();
+                scanner.nextLine();
+
+                TiposQuarto tipoQuarto;
+                if (tipoQuartoEscolhido == 1) {
+                    tipoQuarto = TiposQuarto.NORMAL;
+                } else if (tipoQuartoEscolhido == 2) {
+                    tipoQuarto = TiposQuarto.PREMIUM;
+                } else {
+                    System.out.println("Opção inválida para o tipo de quarto. Tente novamente.");
+                    return;
+                }
+
+                System.out.print("Digite a data de início da reserva (yyyy-MM-dd): ");
+                String dataInicio = scanner.nextLine().trim();
+                System.out.print("Digite a data de fim da reserva (yyyy-MM-dd): ");
+                String dataFim = scanner.nextLine().trim();
+
+                String resultadoReserva = reservaService.fazerReserva(cliente.getId(), hotel.getId(), tipoQuarto, dataInicio, dataFim);
+                System.out.println(resultadoReserva);
+
+            } catch (InputMismatchException e) {
+                System.out.println("Erro: Entrada inválida. Por favor, insira valores corretos.");
+                scanner.nextLine();
+            }
+
+        } else {
+            System.out.println("Cliente não encontrado. Por favor, cadastre o cliente antes de fazer a reserva.");
+        }
+    }
+
+    private void verReservasDoCliente(Scanner scanner) {
+        System.out.print("Digite o CPF do cliente para ver suas reservas: ");
+        String cpfConsulta = scanner.nextLine().trim();
+
+        try {
+            List<Reserva> reservas = reservaService.verReservasDoCliente(cpfConsulta);
+
+            if (reservas.isEmpty()) {
+                System.out.println("Nenhuma reserva encontrada para este cliente.");
+            } else {
+                System.out.println("Suas reservas:");
+                reservas.forEach(System.out::println);
+            }
+        } catch (RuntimeException e) {
+            System.out.println("Erro ao buscar reservas: " + e.getMessage());
+        }
     }
 }
