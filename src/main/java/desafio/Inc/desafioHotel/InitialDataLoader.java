@@ -17,12 +17,11 @@ import java.util.List;
 public class InitialDataLoader {
 
     @Bean
-    CommandLineRunner initDatabase(HotelRepository hotelRepository, QuartoRepository quartoRepository) {
+    CommandLineRunner initializeDatabase(HotelRepository hotelRepository, QuartoRepository quartoRepository) {
         return args -> {
-            System.out.println("Inicializando dados de hotéis e quartos...");
 
             if (hotelRepository.count() == 0) {
-                List<Hotel> hoteis = Arrays.asList(
+                List<Hotel> listaHoteis = Arrays.asList(
                         new Hotel("Hotel A", "Endereço A"),
                         new Hotel("Hotel B", "Endereço B"),
                         new Hotel("Hotel C", "Endereço C"),
@@ -30,9 +29,10 @@ public class InitialDataLoader {
                         new Hotel("Hotel E", "Endereço E")
                 );
 
-                hotelRepository.saveAll(hoteis);
+                hotelRepository.saveAll(listaHoteis);
+                System.out.println("Hotéis salvos no banco de dados.");
 
-                for (Hotel hotel : hoteis) {
+                for (Hotel hotel : listaHoteis) {
                     for (int i = 0; i < 5; i++) {
                         Quarto quartoNormal = new Quarto(TiposQuarto.NORMAL, Disponibilidade.DISPONIVEL, hotel);
                         Quarto quartoPremium = new Quarto(TiposQuarto.PREMIUM, Disponibilidade.DISPONIVEL, hotel);
@@ -40,8 +40,8 @@ public class InitialDataLoader {
                         quartoRepository.save(quartoPremium);
                     }
                 }
-
-                System.out.println("Dados iniciais de hotéis e quartos carregados com sucesso.");
+            } else {
+                System.out.println("Dados já existem no banco de dados. Nenhuma ação necessária.");
             }
         };
     }

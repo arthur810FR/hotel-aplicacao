@@ -38,51 +38,28 @@ public class Menu implements CommandLineRunner {
     @Override
     public void run(String... args) {
         Scanner scanner = new Scanner(System.in);
-        boolean running = true;
+        boolean isRunning = true;
 
-        while (running) {
+        while (isRunning) {
             try {
-                System.out.println("\n===========================================");
-                System.out.println("======== MENU DE GESTÃO DE HOTEIS =========");
-                System.out.println("===========================================");
-                System.out.println("| 1. Ver Hotéis Disponíveis               |");
-                System.out.println("| 2. Cadastrar Cliente                    |");
-                System.out.println("| 3. Fazer Reserva                        |");
-                System.out.println("| 4. Ver Minhas Reservas                  |");
-                System.out.println("| 5. Sair                                 |");
-                System.out.println("===========================================");
-                System.out.print("Escolha uma opção: ");
+                exibirMenuPrincipal();
 
                 int opcao = scanner.nextInt();
                 scanner.nextLine();
 
                 switch (opcao) {
-                    case 1:
-                        mostrarHoteisDisponiveis();
-                        break;
-
-                    case 2:
-                        cadastrarCliente(scanner);
-                        break;
-
-                    case 3:
-                        fazerReserva(scanner);
-                        break;
-
-                    case 4:
-                        verReservasDoCliente(scanner);
-                        break;
-
-                    case 5:
-                        running = false;
-                        System.out.println("Obrigado por usar o sistema! Saindo...");
-                        break;
-
-                    default:
-                        System.out.println("Opção inválida. Escolha um número entre 1 e 5.");
+                    case 1 -> exibirHoteisDisponiveis();
+                    case 2 -> cadastrarNovoCliente(scanner);
+                    case 3 -> realizarReserva(scanner);
+                    case 4 -> exibirReservasDoCliente(scanner);
+                    case 5 -> {
+                        isRunning = false;
+                        System.out.println("Saindo do sistema... Obrigado por utilizar nossos serviços!");
+                    }
+                    default -> System.out.println("Opção inválida. Por favor, escolha um número de 1 a 5.");
                 }
             } catch (InputMismatchException e) {
-                System.out.println("Erro: Entrada inválida. Por favor, digite um número válido.");
+                System.out.println("Erro: Entrada inválida. Digite um número válido.");
                 scanner.nextLine();
             } catch (Exception e) {
                 System.out.println("Ocorreu um erro inesperado: " + e.getMessage());
@@ -92,13 +69,26 @@ public class Menu implements CommandLineRunner {
         scanner.close();
     }
 
-    private void mostrarHoteisDisponiveis() {
-        List<Hotel> hoteisDisponiveis = hotelRepository.findAll();
-        if (hoteisDisponiveis.isEmpty()) {
+    private void exibirMenuPrincipal() {
+        System.out.println("\n===========================================");
+        System.out.println("======== SISTEMA DE GESTÃO DE HOTÉIS ======");
+        System.out.println("===========================================");
+        System.out.println("| 1. Ver Hotéis Disponíveis               |");
+        System.out.println("| 2. Cadastrar Cliente                    |");
+        System.out.println("| 3. Realizar Reserva                     |");
+        System.out.println("| 4. Consultar Minhas Reservas            |");
+        System.out.println("| 5. Sair                                 |");
+        System.out.println("===========================================");
+        System.out.print("Escolha uma opção: ");
+    }
+
+    private void exibirHoteisDisponiveis() {
+        List<Hotel> hoteis = hotelRepository.findAll();
+        if (hoteis.isEmpty()) {
             System.out.println("Nenhum hotel disponível no momento.");
         } else {
-            System.out.println("Hotéis disponíveis com quartos para reserva:");
-            hoteisDisponiveis.forEach(hotel -> {
+            System.out.println("Lista de Hotéis com Quartos Disponíveis:");
+            hoteis.forEach(hotel -> {
                 long quartosDisponiveis = quartoRepository.countByHotelAndDisponibilidade(hotel, Disponibilidade.DISPONIVEL);
                 System.out.printf("Hotel: %s\nLocalização: %s\nQuartos disponíveis: %d\n",
                         hotel.getNome(), hotel.getLocalizacao(), quartosDisponiveis);
@@ -107,24 +97,24 @@ public class Menu implements CommandLineRunner {
         }
     }
 
-    private void cadastrarCliente(Scanner scanner) {
+    private void cadastrarNovoCliente(Scanner scanner) {
         String nome;
         while (true) {
-            System.out.print("Digite o nome do cliente(Completo): ");
+            System.out.print("Digite o nome completo do cliente: ");
             nome = scanner.nextLine().trim();
 
             if (nome.matches("^[a-zA-Z\\s]+$") && nome.length() >= 3) {
                 break;
             } else if (nome.length() < 3) {
-                System.out.println("Erro: O nome deve ter pelo menos 3 caracteres.");
+                System.out.println("Erro: O nome deve ter no mínimo 3 caracteres.");
             } else {
-                System.out.println("Nome inválido! Digite o nome apenas com letras e espaços.");
+                System.out.println("Erro: Nome inválido! Digite apenas letras e espaços.");
             }
         }
 
         String cpf;
         while (true) {
-            System.out.print("Digite o CPF do cliente: ");
+            System.out.print("Digite o CPF do cliente (apenas números): ");
             cpf = scanner.nextLine().trim();
 
             if (cpf.isEmpty()) {
@@ -132,18 +122,16 @@ public class Menu implements CommandLineRunner {
             } else if (cpf.matches("\\d{11}")) {
                 break;
             } else {
-                System.out.println("Erro: CPF inválido! Certifique-se de que contém exatamente 11 dígitos numéricos.");
+                System.out.println("Erro: CPF inválido! Deve conter exatamente 11 dígitos.");
             }
         }
 
         Cliente novoCliente = new Cliente(nome, cpf);
         clienteRepository.save(novoCliente);
-        System.out.printf("Cliente '%s' cadastrado com sucesso!\n", nome);
+        System.out.printf("Cliente %s cadastrado com sucesso!\n", nome);
     }
 
-
-
-    private void fazerReserva(Scanner scanner) {
+    private void realizarReserva(Scanner scanner) {
         System.out.print("Digite o CPF do cliente: ");
         String cpfCliente = scanner.nextLine().trim();
         Optional<Cliente> clienteOpt = clienteRepository.findByCpf(cpfCliente);
@@ -157,7 +145,7 @@ public class Menu implements CommandLineRunner {
                 return;
             }
 
-            System.out.println("Selecione o hotel pelo número:");
+            System.out.println("Escolha o hotel pelo número correspondente:");
             for (int i = 0; i < listaHoteis.size(); i++) {
                 System.out.printf("%d. %s - Localização: %s\n", i + 1, listaHoteis.get(i).getNome(), listaHoteis.get(i).getLocalizacao());
             }
@@ -168,7 +156,7 @@ public class Menu implements CommandLineRunner {
                 scanner.nextLine();
 
                 if (hotelNumero < 1 || hotelNumero > listaHoteis.size()) {
-                    System.out.println("Opção inválida. Por favor, insira um número válido da lista.");
+                    System.out.println("Erro: Número inválido. Escolha um hotel da lista.");
                     return;
                 }
 
@@ -187,7 +175,7 @@ public class Menu implements CommandLineRunner {
                 } else if (tipoQuartoEscolhido == 2) {
                     tipoQuarto = TiposQuarto.PREMIUM;
                 } else {
-                    System.out.println("Opção inválida para o tipo de quarto. Tente novamente.");
+                    System.out.println("Erro: Tipo de quarto inválido. Escolha entre 1 e 2.");
                     return;
                 }
 
@@ -209,33 +197,34 @@ public class Menu implements CommandLineRunner {
 
                         break;
                     } catch (ParseException e) {
-                        System.out.println("Formato de data inválido! Por favor, insira a data no formato dd/MM/yyyy.");
+                        System.out.println("Erro: Formato de data inválido! Use dd/MM/yyyy.");
                     }
                 }
 
-                String resultadoReserva = reservaService.fazerReserva(cliente.getId(), hotel.getId(), tipoQuarto, dataInicio, dataFim);
+                String resultadoReserva = reservaService.criarReserva(cliente.getId(), hotel.getId(), tipoQuarto, dataInicio, dataFim);
                 System.out.println(resultadoReserva);
 
             } catch (InputMismatchException e) {
-                System.out.println("Erro: Entrada inválida. Por favor, insira valores corretos.");
+                System.out.println("Erro: Entrada inválida. Verifique as opções e tente novamente.");
                 scanner.nextLine();
             }
 
         } else {
-            System.out.println("Cliente não encontrado. Por favor, cadastre o cliente antes de fazer a reserva.");
+            System.out.println("Erro: Cliente não encontrado. Cadastre o cliente antes de reservar.");
         }
     }
 
-    private void verReservasDoCliente(Scanner scanner) {
-        System.out.print("Digite o CPF do cliente para ver suas reservas: ");
+    private void exibirReservasDoCliente(Scanner scanner) {
+        System.out.print("Digite o CPF do cliente para consultar reservas: ");
         String cpfConsulta = scanner.nextLine().trim();
 
         try {
-            List<Reserva> reservas = reservaService.verReservasDoCliente(cpfConsulta);
+            List<Reserva> reservas = reservaService.buscarReservasPorCliente(cpfConsulta);
 
             if (reservas.isEmpty()) {
                 System.out.println("Nenhuma reserva encontrada para este cliente.");
             } else {
+                System.out.println("Reservas encontradas:");
                 reservas.forEach(System.out::println);
             }
         } catch (RuntimeException e) {

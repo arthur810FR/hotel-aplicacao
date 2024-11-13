@@ -34,28 +34,28 @@ public class ReservaService {
     @Autowired
     private QuartoRepository quartoRepository;
 
-    public String fazerReserva(Long clienteId, Long hotelId, TiposQuarto tipoQuarto, String dataInicio, String dataFim) {
-        Cliente cliente = clienteRepository.findById(clienteId)
-                .orElseThrow(() -> new ClienteNaoEncontrado("Cliente com ID " + clienteId + " não encontrado."));
+    public String criarReserva(Long idCliente, Long idHotel, TiposQuarto tipoQuarto, String dataInicio, String dataFim) {
+        Cliente cliente = clienteRepository.findById(idCliente)
+                .orElseThrow(() -> new ClienteNaoEncontrado("Não foi possível localizar o cliente com ID: " + idCliente));
 
-        Hotel hotel = hotelRepository.findById(hotelId)
-                .orElseThrow(() -> new HotelNaoEncontrado("Hotel com ID " + hotelId + " não encontrado."));
+        Hotel hotel = hotelRepository.findById(idHotel)
+                .orElseThrow(() -> new HotelNaoEncontrado("Hotel com ID: " + idHotel + " não encontrado. Verifique e tente novamente."));
 
-        Quarto quarto = quartoRepository.findFirstByHotelAndDisponibilidadeAndTipo(hotel, Disponibilidade.DISPONIVEL, tipoQuarto)
-                .orElseThrow(() -> new QuartoIndisponivel("Nenhum quarto do tipo " + tipoQuarto + " disponível no hotel " + hotel.getNome() + "."));
+        Quarto quartoDisponivel = quartoRepository.findFirstByHotelAndDisponibilidadeAndTipo(hotel, Disponibilidade.DISPONIVEL, tipoQuarto)
+                .orElseThrow(() -> new QuartoIndisponivel("Desculpe, todos os quartos do tipo " + tipoQuarto + " estão indisponíveis no hotel " + hotel.getNome() + "."));
 
-        Reserva reserva = new Reserva(quarto, cliente, dataInicio, dataFim);
+        Reserva reserva = new Reserva(quartoDisponivel, cliente, dataInicio, dataFim);
         reservaRepository.save(reserva);
 
-        quarto.setDisponivel(false);
-        quartoRepository.save(quarto);
+        quartoDisponivel.setDisponivel(false);
+        quartoRepository.save(quartoDisponivel);
 
-        return "Reserva realizada com sucesso no " + hotel.getNome();
+        return "Reserva realizada com sucesso no " + hotel.getNome() + ". Aproveite sua estadia!";
     }
 
-    public List<Reserva> verReservasDoCliente(String cpf) {
+    public List<Reserva> buscarReservasPorCliente(String cpf) {
         Cliente cliente = clienteRepository.findByCpf(cpf)
-                .orElseThrow(() -> new ClienteNaoEncontrado("Cliente com CPF " + cpf + " não encontrado."));
+                .orElseThrow(() -> new ClienteNaoEncontrado("Cliente com CPF: " + cpf + " não encontrado. Verifique o CPF e tente novamente."));
 
         return reservaRepository.findByClienteId(cliente.getId());
     }
