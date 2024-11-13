@@ -72,4 +72,4 @@ Certifique-se de ter o seguinte instalado em sua máquina:
 ### Clone o Repositório:
 
 ```bash
-git clone https://github.com/seu-usuario/seu-projeto.git
+git clone https://github.com/arthur810FR/hotel-aplicacao.git
