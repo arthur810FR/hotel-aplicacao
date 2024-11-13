@@ -29,3 +29,32 @@ O projeto está organizado em pacotes que facilitam a manutenção e a escalabil
 - **service**: Implementa a lógica de negócios do sistema, como criação de reservas e busca de reservas por cliente.
 - **InitialDataLoader**: Classe para inicializar o banco de dados com dados de exemplo de hotéis e quartos.
 - **Menu**: Classe principal de interação com o usuário através de um menu de console.
+
+desafioHotel/
+├── src/
+│   └── main/
+│       └── java/
+│           └── desafio/Inc/desafioHotel/
+│               ├── enums/
+│               │   ├── Disponibilidade.java
+│               │   └── TiposQuarto.java
+│               ├── exceptions/
+│               │   ├── ClienteNaoEncontrado.java
+│               │   ├── HotelNaoEncontrado.java
+│               │   └── QuartoIndisponivel.java
+│               ├── model/
+│               │   ├── Cliente.java
+│               │   ├── Hotel.java
+│               │   ├── Quarto.java
+│               │   └── Reserva.java
+│               ├── repository/
+│               │   ├── ClienteRepository.java
+│               │   ├── HotelRepository.java
+│               │   ├── QuartoRepository.java
+│               │   └── ReservaRepository.java
+│               ├── service/
+│               │   └── ReservaService.java
+│               ├── DesafioHotelApplication.java
+│               ├── InitialDataLoader.java
+│               └── Menu.java
+└── pom.xml
