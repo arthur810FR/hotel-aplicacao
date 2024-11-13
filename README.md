@@ -31,7 +31,7 @@ O projeto está organizado em pacotes que facilitam a manutenção e a escalabil
 - **Menu**: Classe principal de interação com o usuário através de um menu de console.
 
 ## Estrutura de Visualização do Projeto 📂
-
+```plaintext
 desafioHotel/
 ├── src/
 │   └── main/
@@ -60,3 +60,4 @@ desafioHotel/
 │               ├── InitialDataLoader.java
 │               └── Menu.java
 └── pom.xml
+```
