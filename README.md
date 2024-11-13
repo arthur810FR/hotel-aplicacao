@@ -61,3 +61,15 @@ desafioHotel/
 │               └── Menu.java
 └── pom.xml
 ```
+## Requisitos de Instalação 📋
+
+Certifique-se de ter o seguinte instalado em sua máquina:
+- Java 11+ (ou uma versão compatível especificada no projeto)
+- Maven
+
+## Executando o Projeto ▶️
+
+### Clone o Repositório:
+
+```bash
+git clone https://github.com/seu-usuario/seu-projeto.git
