@@ -30,6 +30,8 @@ O projeto está organizado em pacotes que facilitam a manutenção e a escalabil
 - **InitialDataLoader**: Classe para inicializar o banco de dados com dados de exemplo de hotéis e quartos.
 - **Menu**: Classe principal de interação com o usuário através de um menu de console.
 
+## Estrutura de Visualização do Projeto 📂
+
 desafioHotel/
 ├── src/
 │   └── main/
