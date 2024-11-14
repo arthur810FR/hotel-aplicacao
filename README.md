@@ -141,7 +141,7 @@ Após iniciar a aplicação com o comando `mvn spring-boot:run`, o menu de inter
 Este fluxo demonstra como um usuário pode navegar pelo sistema, registrar-se como cliente, realizar reservas e consultar suas reservas com facilidade.
 
 ### Melhorias Futuras 🔮
-- **Interface Gráfica**: Implementar uma interface gráfica (GUI) para melhorar a experiência do usuário, tornando o sistema mais acessível e visual.
+- **Interface Gráfica**: Planejo implementar uma interface gráfica para facilitar ainda mais o uso do sistema.
 - **Autenticação e Autorização**: Adicionar controle de acesso com autenticação e autorização para gerenciar diferentes permissões de usuários, como administrador e cliente, proporcionando mais segurança e controle sobre as funcionalidades disponíveis.
 
 ## 📞 Contato
