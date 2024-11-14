@@ -8,6 +8,10 @@ Este projeto é um sistema de linha de comando para gestão de reservas de hoté
 - **Cadastrar Cliente**: Permite o cadastro de clientes com validações no nome (apenas letras e no mínimo 3 caracteres) e CPF (11 dígitos numéricos).
 - **Realizar Reserva**: O cliente pode escolher um hotel e o tipo de quarto, informando as datas de início e fim da reserva.
 - **Consultar Reservas**: Exibe as reservas feitas por um cliente específico, identificado pelo CPF.
+## Demonstração em Vídeo 📹
+
+[![Demonstração do Projeto](https://github.com/arthur810FR/hotel-aplicacao/issues/1#issue-2657312566)
+
 ## Tecnologias Utilizadas 🛠️
 
 - **Java 21**: Linguagem principal do projeto.
