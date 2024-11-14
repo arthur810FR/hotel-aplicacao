@@ -10,7 +10,7 @@ Este projeto é um sistema de linha de comando para gestão de reservas de hoté
 - **Consultar Reservas**: Exibe as reservas feitas por um cliente específico, identificado pelo CPF.
 ## Demonstração em Vídeo 📹
 
-[![Demonstração do Projeto](https://github.com/arthur810FR/hotel-aplicacao/issues/1#issue-2657312566)
+https://github.com/user-attachments/assets/6ce1ea94-9f10-49a0-be20-011384f0763a
 
 ## Tecnologias Utilizadas 🛠️
 
