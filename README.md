@@ -78,7 +78,7 @@ Certifique-se de ter o seguinte instalado em sua máquina:
 ```bash
 git clone https://github.com/arthur810FR/hotel-aplicacao.git
 ```
-2. **Navegue até o diretório do projeto:**
+2. **Navegue até o diretório do projeto**
 
 3. **Abra o projeto na sua IDE e execute as classe DesafioHotelApplication para o projeto rodar.**
 
